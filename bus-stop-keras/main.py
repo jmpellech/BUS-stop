@@ -101,17 +101,15 @@ if __name__ == '__main__':
 
 	tokenizer = Tokenizer.from_pretrained(pt_model_checkpoint)
 
-	devices = []
-	for gpu_num in os.environ["CUDA_VISIBLE_DEVICES"].split(','):
-		devices.append('/device:GPU:{}'.format(gpu_num))
-
-	strategy = tf.distribute.MirroredStrategy(devices=devices)
+	# Use CPU for initial compatibility testing on Mac
+	devices = ['/device:CPU:0']
+	strategy = tf.distribute.OneDeviceStrategy(device=devices[0])
 	gpus = strategy.num_replicas_in_sync
 
 	logger.info("***Logging start***")
 	logger.info("task_path = {}".format(task_path))
 	logger.info(args)
-	logger.info("os.environ['CUDA_VISIBLE_DEVICES'] = {}".format(os.environ['CUDA_VISIBLE_DEVICES']))
+	logger.info("Running on CPU")
 	logger.info("devices = {}".format(devices))
 	logger.info("Number of devices: {}".format(gpus))
 
@@ -215,6 +213,12 @@ if __name__ == '__main__':
 		unl_dist = unl_probs.mean(0)
 		
 		_ids = np.arange(0,unl_len,unl_len/lab_len).astype('int32') # for downsampling
+		print("unl_confs:", unl_confs[_ids])
+		print("p_l_conf:", p_l_conf)
+		print("unl_confs NaN:", np.isnan(unl_confs[_ids]).any())
+		print("p_l_conf NaN:", np.isnan(p_l_conf).any())
+		print("unl_confs Inf:", np.isinf(unl_confs[_ids]).any())
+		print("p_l_conf Inf:", np.isinf(p_l_conf).any())
 		s_conf = euclidean(unl_confs[_ids], p_l_conf)
 		s_class = 1.-cosine(unl_dist, c_u_cali)
 		#logger.info("Epoch {}, s_conf={}, s_class={}".format(epoch,round(s_conf,4),round(s_class,4)))

@@ -45,7 +45,7 @@ class ConstructPtModeler(object):
         self.config.attention_probs_dropout_prob = attention_probs_dropout_prob
         self.config.hidden_dropout_prob = hidden_dropout_prob
 
-        self.encoder = TFModel.from_pretrained(pt_model_checkpoint, config=self.config, from_pt=True, name="encoder")
+        self.encoder = TFModel.from_pretrained(pt_model_checkpoint, config=self.config, name="encoder")
         self.init_pt_weights = self.encoder.get_weights()
         
         input_ids = Input(shape=(max_seq_length,), dtype=tf.int32, name="input_ids")

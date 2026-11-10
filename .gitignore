@@ -1,0 +1,16 @@
+# Python environments
+.venv/
+__pycache__/
+*.pyc
+
+# VS Code and macOS
+.vscode/
+.DS_Store
+
+# Pretrained model files
+bus-stop-keras/params/bert_tf/
+*.h5
+*.bin
+
+# Generated experiment logs
+bus-stop-keras/logs/test_*.log
