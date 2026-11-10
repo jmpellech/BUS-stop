@@ -101,15 +101,17 @@ if __name__ == '__main__':
 
 	tokenizer = Tokenizer.from_pretrained(pt_model_checkpoint)
 
-	# Use CPU for initial compatibility testing on Mac
-	devices = ['/device:CPU:0']
-	strategy = tf.distribute.OneDeviceStrategy(device=devices[0])
+	# Automatically select GPU or CPU
+	available_gpus = tf.config.list_physical_devices("GPU")
+	device = "/GPU:0" if available_gpus else "/CPU:0"
+	devices = [device]
+	strategy = tf.distribute.OneDeviceStrategy(device=device)
 	gpus = strategy.num_replicas_in_sync
 
 	logger.info("***Logging start***")
 	logger.info("task_path = {}".format(task_path))
 	logger.info(args)
-	logger.info("Running on CPU")
+	logger.info("Running on {}".format(device))
 	logger.info("devices = {}".format(devices))
 	logger.info("Number of devices: {}".format(gpus))
 
